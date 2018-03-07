@@ -1,0 +1,26 @@
+{
+  "name": "kun-fe",
+  "version": "1.0.0",
+  "description": "kun - scaner",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/huyuangang/kun-fe.git"
+  },
+  "keywords": [
+    "scaner"
+  ],
+  "author": "huyuangang, taoqi",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/huyuangang/kun-fe/issues"
+  },
+  "homepage": "https://github.com/huyuangang/kun-fe#readme",
+  "devDependencies": {
+    "webpack": "^4.1.0",
+    "webpack-dev-server": "^3.1.0"
+  }
+}
