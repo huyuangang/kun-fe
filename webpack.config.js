@@ -3,7 +3,8 @@ const path = require('path')
 const webpack = require('webpack')
 module.exports = {
     entry: {
-        'login': path.resolve(__dirname, './app/entrys/login.js')
+        'login': path.resolve(__dirname, './app/entrys/login.js'),
+        'regist': path.resolve(__dirname, './app/entrys/regist.js')
     },
     output: {
         path: path.resolve(__dirname, './app/output'),
@@ -38,12 +39,14 @@ module.exports = {
     },
     resolve: {
         alias: {
-            'vue$': 'vue/dist/vue.js'
+            'vue$': 'vue/dist/vue.js',
+            'bootstrap$': '_bootstrap@4.1.0@bootstrap/dist/css/bootstrap.min.css'
         }
     }, 
     devServer: {
         hot: true,
-        contentBase: [path.resolve(__dirname, './app/pages'), path.resolve(__dirname, './app/output')],
+        contentBase: [path.resolve(__dirname, './app/pages'), 
+                      path.resolve(__dirname, './app/output')],
         publicPath: "/public",
         port: 3000,
         historyApiFallback: true

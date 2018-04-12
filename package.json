@@ -23,9 +23,11 @@
   },
   "homepage": "https://github.com/huyuangang/kun-fe#readme",
   "devDependencies": {
+    "axios": "^0.18.0",
     "babel-cli": "^6.26.0",
     "babel-loader": "^7.1.4",
     "babel-preset-env": "^1.6.1",
+    "bootstrap": "^4.1.0",
     "css-loader": "^0.28.10",
     "less": "^3.0.1",
     "less-loader": "^4.0.6",

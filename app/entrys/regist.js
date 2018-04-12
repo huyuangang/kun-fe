@@ -2,9 +2,9 @@
 import Vue from 'vue'
 import 'bootstrap'
 import '../common/common.css'
-import login from '../components/login.vue'
+import regist from '../components/regist.vue'
 
 new Vue({
     el: '#app',
-    render: h => h(login)
+    render: h => h(regist)
 })
