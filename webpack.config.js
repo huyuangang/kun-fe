@@ -3,6 +3,7 @@ const path = require('path')
 const webpack = require('webpack')
 module.exports = {
     entry: {
+        'index': path.resolve(__dirname, './app/entrys/index.js'),
         'login': path.resolve(__dirname, './app/entrys/login.js'),
         'regist': path.resolve(__dirname, './app/entrys/regist.js')
     },
@@ -46,7 +47,8 @@ module.exports = {
     devServer: {
         hot: true,
         contentBase: [path.resolve(__dirname, './app/pages'), 
-                      path.resolve(__dirname, './app/output')],
+                      path.resolve(__dirname, './app/output'),
+                      path.resolve(__dirname, './app/common/icons')],
         publicPath: "/public",
         port: 3000,
         historyApiFallback: true
