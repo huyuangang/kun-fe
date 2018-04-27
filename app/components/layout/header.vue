@@ -5,7 +5,11 @@
             <li class="nav-item" :class="{'active-nav': active===index}" v-for="(l, index) in list" :key="index"><a :href="l.url">{{l.text}}</a></li>
         </ul>
         <div class="user-option">
-            <span class="login">登录</span>|<span class="regist">注册</span>
+            <span class="user-name">{{name}}</span>
+            <ul class="option-list">
+                <li class="option-item">添加用户</li>
+                <li class="option-item" @click="logout">注销</li>
+            </ul>
         </div>
         <div class="search">
             <input type="text" class="search-input" placeholder="Search">
@@ -14,10 +18,12 @@
 </template>
 
 <script>
+import { getUserName, logout } from '../../api'
 export default {
     props: [ 'active' ],
     data() {
         return {
+            name: '未命名',
             list: [
                 { text: '首页', url: '/'},
                 { text: '漏洞列表', url: '/vuln'},
@@ -26,6 +32,21 @@ export default {
                 { text: '统计分析', url: '/'}
             ]
         }
+    },
+    methods: {
+        logout() {
+            logout({});
+        }
+    },
+    created() {
+        getUserName({
+            success: data => {
+                this.name = data.username
+            },
+            fail: e => {
+                console.log('err', e);
+            }
+        })
     }
 }
 </script>
@@ -75,12 +96,42 @@ export default {
     .user-option{
         float: right;
         margin-right: 10px;
-        .login, .regist{
+        position: relative;
+        &:hover{
+            .user-name{
+                background: #eff3f9;
+            }
+            .option-list{
+                height: 80px;
+            }
+        }
+        .user-name{
             display: inline-block;
             padding: 0 20px;
             height: 60px;
             line-height: 60px;
             cursor: pointer;
+        }
+        .option-list{
+            position: absolute;
+            background: #fff;
+            width: 100px;
+            min-width: 80px;
+            top: 100%;
+            right: 0;
+            box-shadow: 0px 2px 2px rgb(114, 114, 114);
+            height: 0;
+            overflow: hidden;
+            transition: all .2s ease-in-out;
+            .option-item{
+                line-height: 40px;
+                padding: 0 10px;
+                box-sizing: border-box;
+                cursor: pointer;
+                &:hover{
+                    color: @color;
+                }
+            }
         }
     }
     .search{

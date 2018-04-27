@@ -1,8 +1,8 @@
 
 import axios from 'axios'
 
-// const API_HOST = 'http://192.168.2.206:8000'
-const API_HOST = ''
+const API_HOST = 'http://192.168.2.207:8000'
+// const API_HOST = ''
 
 
 //登陆
@@ -34,6 +34,44 @@ export function regist({
     }) {
         axios
             .post(_handlePath(REGIST_PATH), params)
+            .then(res => {
+                success && success(res.data)
+            })
+            .catch(e => {
+                fail && fail(e)
+            })
+
+}
+
+//注销
+const LOGOUT_PATH = '/logout'
+
+export function logout({
+        params={},
+        success,
+        fail
+    }) {
+        axios
+            .get(_handlePath(LOGOUT_PATH))
+            .then(res => {
+                success && success(res.data)
+            })
+            .catch(e => {
+                fail && fail(e)
+            })
+
+}
+
+//获取用户名
+const GET_USER_NAME = '/user'
+
+export function getUserName({
+        params={},
+        success,
+        fail
+    }) {
+        axios
+            .get(_handlePath(GET_USER_NAME), params)
             .then(res => {
                 success && success(res.data)
             })

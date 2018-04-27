@@ -2,17 +2,20 @@
 <template>
     <div class="login">
         <div class="main">
-            <header class="header">kun<span>.scanner</span></header>
+            <header class="header">
+                <p>kun<span>.scanner</span></p>
+                <p class="line"></p>
+            </header>
             <div class="form-wrap">
                 <div class="form-group">
-                    <input type="text" class="username" name="username" placeholder="用户名" v-model="username" @focus="nameActive=true" @blur="nameActive=false">
-                    <div class="border-bottom" :class="{'active-bottom': nameActive}"></div>
+                    <label for="">用户名：</label>
+                    <input type="text" class="username" name="username" placeholder="输入用户名" v-model="username" @focus="nameActive=true" @blur="nameActive=false">
                 </div>
                 <div class="form-group">
-                    <input type="password" class="password" name="password" placeholder="密码" v-model="password" @focus="pwdActive=true" @blur="pwdActive=false">
-                    <div class="border-bottom" :class="{'active-bottom': pwdActive}"></div>
+                    <label for="">密码：</label>
+                    <input type="password" class="password" name="password" placeholder="输入密码" v-model="password" @focus="pwdActive=true" @blur="pwdActive=false">
                 </div>
-                <input type="submit" class="submit" value="登陆" @click="login">
+                <input type="submit" class="submit" value="登 陆" @click="login">
             </div>
         </div>
     </div>
@@ -24,9 +27,7 @@ export default {
     data() {
         return {
             username: '',
-            password: '',
-            nameActive: false,
-            pwdActive: false
+            password: ''
         }
     },
     methods: {
@@ -37,10 +38,12 @@ export default {
                         username: this.username,
                         password: this.password
                     },
-                    success(res) {
-                        console.log(res);
+                    success: data => {
+                        if(data.success) {
+                            location.href = '/'
+                        }
                     },
-                    fail(e) {
+                    fail: e => {
                         console.log('err', e);
                     }
                 })
@@ -51,70 +54,67 @@ export default {
 </script>
 
 <style lang="less" scoped>
+    @color: rgb(56, 65, 80);
     .login{
         position: absolute;
-        top: 30%;
-        width: 100%;
-        .main{
-            width: 485px;
-            margin: 0 auto;
-        }
+        top: 50%;
+        width: 420px;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        background: #fff;
+        padding: 20px 20px 40px 20px;
+        border-radius: 3px;
+        box-sizing: border-box;
+        box-shadow: 0 0 8px rgb(56, 65, 80, .24);
     }
     .header{
-        padding-bottom: 30px;
-        margin: 8px 0;
         font-weight: 400;
+        padding-bottom: 30px;
         font-size: 48px;
-        color: rgb(117, 162, 74);
+        color: @color;
+        text-align: center;
+        .line{
+            position: absolute;
+            left: 0;
+            width: 100%;
+            height: 2px;
+            background: @color;
+        }
         span{
             font-size: 30px;
-            color: #fff;
+            color: #666;
         }
     }
     .form-wrap {
         input[type=submit] {
-            float: right;
-            margin-left: 0;
-            margin-right: 0;
+            display: block;
             margin-top: 24px;
-            padding: 0 10px;
-            width: 110px;
-            border-color: #fff;
-            background-color: #fff;
-            color: rgb(56, 65, 80);
+            width: 100%;
+            border-color: @color;
+            background-color: @color;
+            color: #fff;
             border: none;
             outline: none;
             cursor: pointer;
             border-radius: 2px;
-            line-height: 32px;
-            min-height: 32px;
+            line-height: 40px;
+            min-height: 40px;
             font-size: 14px;
             font-weight: 700;
         }
     }
     .form-group{
-        border-bottom: 1px solid #fff;
-        .border-bottom{
-            border-bottom: 2px solid #fff;
-            margin: auto;
-            width: 100%;
-            transform: scaleX(0);
-            transition: all 450ms cubic-bezier(0.23, 1, 0.32, 1) 0ms;
-        }
-        .active-bottom {
-            transform: scaleX(1);
-        }
         input[type=text], input[type=password] {
             padding: 5px 0;
             background: transparent;
-            border: none;
+            border: 1px solid @color;
+            border-radius: 3px;
             outline: none;
             width: 100%;
-            color: #fff;
+            color: rgb(56, 65, 80);
+            font-size: 14px;
+            text-indent: 10px;
         }
-
-        
-
     }
 </style>
 

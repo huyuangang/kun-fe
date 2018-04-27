@@ -56,7 +56,6 @@ export default {
             getPluginList({
                 success(data) {
                     me.pluginList = data;
-                    console.log(data)
                 },
                 fail(e) {
                     console.log(e);
@@ -99,7 +98,6 @@ export default {
                     script: me.getChooseSctipt()
                 },
                 success(data){
-                    console.log(data);
                     me.$emit('close');
                 },
                 fail(e) {
