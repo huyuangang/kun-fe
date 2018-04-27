@@ -1,6 +1,7 @@
 
 import axios from 'axios'
 
+// const API_HOST = 'http://192.168.2.206:8000'
 const API_HOST = ''
 
 
@@ -61,7 +62,7 @@ export function getTaskStatus({
 }
 
 //任务列表
-const GET_TASK_LIST = '/task_index'
+const GET_TASK_LIST = '/task_list/index'
 
 export function getTaskList({
     params={},
@@ -77,9 +78,26 @@ export function getTaskList({
             fail && fail(e)
         })
 }
+//任务页
+const GET_TASK_PAGE = '/task_list/page'
+
+export function getTaskPage({
+    params={p:1},
+    success,
+    fail
+}) {
+    axios
+        .get(_handlePath(GET_TASK_PAGE, params))
+        .then(res => {
+            success && success(res.data)
+        })
+        .catch(e => {
+            fail && fail(e)
+        })
+}
 
 //漏洞排行
-const GET_VULN_RANK = '/top_vuln'
+const GET_VULN_RANK = '/vuln_list/index'
 
 export function getVulnRank({
     params={},
@@ -95,9 +113,26 @@ export function getVulnRank({
             fail && fail(e)
         })
 }
+//漏洞分页
+const GET_VULN_PAGE = '/vuln_list/page'
+
+export function getVulnPage({
+    params={p:1},
+    success,
+    fail
+}) {
+    axios
+        .get(_handlePath(GET_VULN_PAGE, params))
+        .then(res => {
+            success && success(res.data)
+        })
+        .catch(e => {
+            fail && fail(e)
+        })
+}
 
 //漏洞排行
-const GET_SCRIPT_RANK = '/active_script'
+const GET_SCRIPT_RANK = '/script_list/index'
 
 export function getScriptRank({
     params={},
@@ -114,7 +149,7 @@ export function getScriptRank({
         })
 }
 
-//漏洞排行
+//插件
 const GET_PLUGIN_LIST = '/get_scripts'
 
 export function getPluginList({
@@ -124,6 +159,24 @@ export function getPluginList({
 }) {
     axios
         .get(_handlePath(GET_PLUGIN_LIST), params)
+        .then(res => {
+            success && success(res.data)
+        })
+        .catch(e => {
+            fail && fail(e)
+        })
+}
+
+//插件分页
+const GET_PLUGIN_PAGE = '/script_list/page'
+
+export function getPluginPage({
+    params={p:1},
+    success,
+    fail
+}) {
+    axios
+        .get(_handlePath(GET_PLUGIN_PAGE, params))
         .then(res => {
             success && success(res.data)
         })
@@ -153,6 +206,15 @@ export function putTask({
 
 
 
-function _handlePath(p) {
-    return API_HOST + p;
+function _handlePath(p, params) {
+    let url = API_HOST + p;
+    if(params) {
+        let keys = Object.keys(params);
+        let parr = []
+        keys.forEach(item => {
+            parr.push(item+'='+params[item])
+        })
+        url = url + '?' + parr.join('&');
+    }
+    return url;
 }

@@ -1,7 +1,7 @@
 
 <template>
     <div class="index">
-        <Header></Header>
+        <Header :active="0"></Header>
         <div class="main">
             <div class="jumbotron">
                 <h1>在线漏洞扫描平台</h1>
@@ -48,7 +48,7 @@
                     </tr>
                 </tbody>
             </table>
-            <h2 class="section-title">漏洞排名<span class="find-more">查看更多</span></h2>
+            <h2 class="section-title">漏洞排名</h2>
             <table class="list" cellspacing="0">
                 <thead>
                     <tr>
@@ -67,7 +67,7 @@
                     </tr>
                 </tbody>
             </table>
-            <h2 class="section-title">活跃脚本列表<span class="find-more">查看更多</span></h2>
+            <h2 class="section-title">活跃脚本列表</h2>
             <table class="list" cellspacing="0">
                 <thead>
                     <tr>

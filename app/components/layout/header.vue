@@ -2,11 +2,7 @@
     <div class="header clearfix">
         <div class="logo">kun</div>
         <ul class="nav">
-            <li class="nav-item"><a href="">首页</a></li>
-            <li class="nav-item"><a href="">漏洞列表</a></li>
-            <li class="nav-item"><a href="">任务列表</a></li>
-            <li class="nav-item"><a href="">插件列表</a></li>
-            <li class="nav-item"><a href="">统计分析</a></li>
+            <li class="nav-item" :class="{'active-nav': active===index}" v-for="(l, index) in list" :key="index"><a :href="l.url">{{l.text}}</a></li>
         </ul>
         <div class="user-option">
             <span class="login">登录</span>|<span class="regist">注册</span>
@@ -19,7 +15,18 @@
 
 <script>
 export default {
-  
+    props: [ 'active' ],
+    data() {
+        return {
+            list: [
+                { text: '首页', url: '/'},
+                { text: '漏洞列表', url: '/vuln.html'},
+                { text: '任务列表', url: '/task.html'},
+                { text: '插件列表', url: '/plugin.html'},
+                { text: '统计分析', url: '/'}
+            ]
+        }
+    }
 }
 </script>
 
@@ -57,6 +64,11 @@ export default {
                 &:hover {
                     color: @color;
                 }
+            }
+        }
+        .active-nav{
+            a{
+                color: @color;
             }
         }
     }

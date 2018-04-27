@@ -5,7 +5,10 @@ module.exports = {
     entry: {
         'index': path.resolve(__dirname, './app/entrys/index.js'),
         'login': path.resolve(__dirname, './app/entrys/login.js'),
-        'regist': path.resolve(__dirname, './app/entrys/regist.js')
+        'regist': path.resolve(__dirname, './app/entrys/regist.js'),
+        'task': path.resolve(__dirname, './app/entrys/task.js'),
+        'vuln': path.resolve(__dirname, './app/entrys/vuln.js'),
+        'plugin': path.resolve(__dirname, './app/entrys/plugin.js')
     },
     output: {
         path: path.resolve(__dirname, './app/output'),

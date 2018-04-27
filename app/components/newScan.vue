@@ -1,4 +1,5 @@
 <template>
+<transition name="modal">
     <div class="modal">
         <div class="content">
             <header class="header">新建扫描<span class="close-btn" @click="$emit('close')">关闭</span></header>
@@ -33,6 +34,7 @@
             <button class="confirm-btn" @click="putTask">执行扫描</button>
         </div>
     </div>
+</transition>
 </template>
 
 <script>
@@ -122,6 +124,7 @@ export default {
         right: 0;
         bottom: 0;
         background: rgba(0, 0, 0, 0.4);
+        transition: opacity .3s ease;
         .content{
             position: absolute;
             left: 50%;
@@ -132,6 +135,7 @@ export default {
             max-height: 90%;
             box-shadow: 0 0 4px #666;
             padding-bottom: 20px;
+            transition: all .3s ease;
             .header{
                 height: 60px;
                 line-height: 60px;
@@ -266,6 +270,20 @@ export default {
                 }
             }
         }
+    }
+
+    .modal-enter {
+  opacity: 0;
+}
+
+    .modal-leave-active {
+    opacity: 0;
+    }
+
+    .modal-enter .modal-container,
+    .modal-leave-active .modal-container {
+    -webkit-transform: scale(1.1);
+    transform: scale(1.1);
     }
 </style>
 
