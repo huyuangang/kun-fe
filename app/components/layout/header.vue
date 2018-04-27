@@ -20,9 +20,9 @@ export default {
         return {
             list: [
                 { text: '首页', url: '/'},
-                { text: '漏洞列表', url: '/vuln.html'},
-                { text: '任务列表', url: '/task.html'},
-                { text: '插件列表', url: '/plugin.html'},
+                { text: '漏洞列表', url: '/vuln'},
+                { text: '任务列表', url: '/task'},
+                { text: '插件列表', url: '/script'},
                 { text: '统计分析', url: '/'}
             ]
         }
