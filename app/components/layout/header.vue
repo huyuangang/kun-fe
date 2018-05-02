@@ -97,6 +97,7 @@ export default {
         float: right;
         margin-right: 10px;
         position: relative;
+        z-index: 1;
         &:hover{
             .user-name{
                 background: #eff3f9;

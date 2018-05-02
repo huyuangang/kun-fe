@@ -40,7 +40,7 @@ export default {
                     },
                     success: data => {
                         if(data.success) {
-                            location.href = '/'
+                            location.href = '/index'
                         }
                     },
                     fail: e => {
