@@ -182,6 +182,7 @@ export default {
             span{
                 display: inline-block;
                 height: 25px;
+                line-height: 25px;
                 padding: 0 8px;
                 border-radius: 3px;
                 background: #eee;;

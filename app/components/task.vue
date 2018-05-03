@@ -3,7 +3,7 @@
     <div class="task">
         <Header :active="2"></Header>
         <div class="main clearfix">
-            <div class="task-card" v-for="(l, index) in list" :key="index">
+            <div class="task-card" v-for="(l, index) in list" :key="index" @click="goTaskDetail(l.task_id)">
                 <p class="task-name" :title="l.task_name">{{l.task_name}}</p>
                 <p class="task-status"><span class="label">状态</span><span class="status-text" :class="'status-'+l.status">{{getStatus(l.status)}}</span></p>
                 <p class="task-progress"><span class="label">进度</span><span class="progress" :title="getProgressNumber(l.progress)"><span class="progress-block" :style="getProgressStyle(l.progress)"></span></span></p>
@@ -103,6 +103,11 @@ export default {
             } else {
                 this.getTaskPage(p);
             }
+        },
+        goTaskDetail(id) {
+            let a = document.createElement('a')
+            a.href = '/task_detail?taskid='+id;
+            a.click();
         }
     },
     created() {

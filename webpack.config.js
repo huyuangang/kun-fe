@@ -7,6 +7,7 @@ module.exports = {
         'login': path.resolve(__dirname, './app/entrys/login.js'),
         'regist': path.resolve(__dirname, './app/entrys/regist.js'),
         'task': path.resolve(__dirname, './app/entrys/task.js'),
+        'taskDetail': path.resolve(__dirname, './app/entrys/taskDetail.js'),
         'vuln': path.resolve(__dirname, './app/entrys/vuln.js'),
         'plugin': path.resolve(__dirname, './app/entrys/plugin.js')
     },

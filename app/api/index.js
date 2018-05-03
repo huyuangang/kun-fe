@@ -2,8 +2,9 @@
 import axios from 'axios'
 axios.defaults.withCredentials = true
 
-const API_HOST = 'http://192.168.2.206:8000'
-// const API_HOST = ''
+
+// const API_HOST = 'http://192.168.2.206:8000'
+const API_HOST = ''
 
 
 //登陆
@@ -164,6 +165,24 @@ export function getTaskSearch({
 }) {
     axios
         .get(_handlePath(GET_TASK_SEARCH, params))
+        .then(res => {
+            success && success(res.data)
+        })
+        .catch(e => {
+            fail && fail(e)
+        })
+}
+
+//任务详情
+const GET_TASK_DETAIL = '/task_info'
+
+export function getTaskDetail({
+    params={},
+    success,
+    fail
+}) {
+    axios
+        .get(API_HOST+GET_TASK_DETAIL+'/'+params.taskid)
         .then(res => {
             success && success(res.data)
         })
