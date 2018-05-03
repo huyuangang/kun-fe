@@ -5,10 +5,12 @@
         <Header :active="3"></Header>
         <div class="main clearfix">
             <div class="plugin-card" v-for="(l, index) in list" :key="index">
-                <p class="plugin-name" :title="l.title">{{l.title}}</p>
-                <p class="plugin-level"><span class="label">漏洞等级</span><span :class="'level-'+l.level">{{getLevel(l.level)}}危</span></p>
-                <p class="plugin-count"><span class="label">出现次数</span><span class="count-text">{{l.count}}</span></p>
-                <p class="plugin-tag"><span class="name">{{l.author}}</span><span class="time">{{l.create_time}}</span></p>
+                <div class="card-content">
+                    <p class="plugin-name" :title="l.title">{{l.title}}</p>
+                    <p class="plugin-level"><span class="label">漏洞等级</span><span :class="'level-'+l.level">{{getLevel(l.level)}}危</span></p>
+                    <p class="plugin-count"><span class="label">出现次数</span><span class="count-text">{{l.count}}</span></p>
+                    <p class="plugin-tag"><span class="name">{{l.author}}</span><span class="time">{{l.create_time}}</span></p>
+                </div>
                 <div class="detail">
                     <p class="title">插件细节</p>
                     {{l.detail}}
@@ -27,14 +29,15 @@
 
 <script>
 import Header from './layout/header.vue'
-import { getPluginPage } from '../api'
+import { getPluginPage, getPluginSearch } from '../api'
 export default {
     data() {
         return {
             list: [],
             page: 1,
             totalPage: 0,
-            goPage: ''
+            goPage: '',
+            keyword: ''
         }
     },
     components: { Header },
@@ -54,11 +57,27 @@ export default {
                 }
             })
         },
+        getPluginSearch(p) {
+            getPluginSearch({
+                params: {
+                    keyword: this.keyword,
+                    p: p || 1
+                },
+                success: data => {
+                    this.page = p;
+                    this.list = data.info;
+                    this.totalPage = data.total_page;
+                },
+                fail: e => {
+                    console.log(e);
+                }
+            })
+        },
         getLevel(text){
             let t;
             switch(text) {
                 case 'high': t = '高';break;
-                case 'middle': t = '中';break;
+                case 'medium': t = '中';break;
                 case 'low': t = '低';break;
             }
             return t;
@@ -66,15 +85,29 @@ export default {
         changePage(p) {
             p = parseInt(p, 10);
             if(1 <= p && p <= this.totalPage) {
-                this.getPluginPage(p);
+                this.getPlugin(p);
             }
         },
         watch(m){
             alert(m);
+        },
+        getKeyword() {
+            let search = location.search.match(/q\=(.+)/);
+            if(search){
+                this.keyword = search[search.index]
+            }
+        },
+        getPlugin(p) {
+            if(this.keyword) {
+                this.getPluginSearch(p)
+            } else {
+                this.getPluginPage(p);
+            }
         }
     },
     created() {
-        this.getPluginPage(this.page);
+        this.getKeyword();
+        this.getPlugin(this.page);
     }
 }
 </script>
@@ -94,16 +127,68 @@ export default {
         box-sizing: border-box;
         .plugin-card{
             position: relative;
-            background: #fff;
             float: left;
             width: 260px;
+            height: 200px;
             margin: 10px;
-            box-shadow: 0 2px 8px rgba(0,0,0,0.24);
-            padding: 16px 16px 0 16px;
-            box-sizing: border-box;
-            border-radius: 3px;
-            cursor: pointer;
-            transition: all .2s ease-in-out;
+            .card-content{
+                position: absolute;
+                left: 0;
+                top: 0;
+                right: 0;
+                bottom: 0;
+                background: #fff;
+                box-shadow: 0 2px 8px rgba(0,0,0,0.24);
+                padding: 16px 16px 0 16px;
+                box-sizing: border-box;
+                border-radius: 3px;
+                cursor: pointer;
+                transition: all .2s ease-in-out;
+                &>p{
+                    margin-bottom: 16px;
+                    line-height: 30px;
+                    white-space: nowrap;
+                    overflow: hidden;
+                    text-overflow: ellipsis;
+                    .label{
+                        display: inline-block;
+                        color: @font-color2;
+                        font-size: 14px;
+                        width: 60px;
+                        margin-right: 40px;
+                    }
+                    .level-high, .level-medium, .level-low{
+                        display: inline-block;
+                        text-align: center;
+                        width: 76px;
+                        height: 30px;
+                        border-radius: 3px;
+                        color: #fff;
+                        font-size: 14px;
+                    }
+                    .level-high{
+                        background: rgb(251, 13, 29);
+                    }
+                    .level-medium{
+                        background: rgb(249, 98, 29);
+                    }
+                    .level-low{
+                        background: rgb(252, 185, 42);
+                    }
+                    .count-text{
+                        font-size: 22px;
+                        color: rgb(34, 145, 226);
+                    }
+                }
+                &:hover{
+                    box-shadow: 0 2px 16px rgba(0,0,0,0.4);
+                    &+.detail{
+                        opacity: 1;
+                        top: 200px;
+                        z-index: 1;
+                    }
+                }
+            }
             .plugin-name{
                 color: @font-color1;
                 font-size: 22px;
@@ -123,50 +208,7 @@ export default {
                     margin-right: 8px;
                 }
             }
-            &>p{
-                margin-bottom: 16px;
-                line-height: 30px;
-                white-space: nowrap;
-                overflow: hidden;
-                text-overflow: ellipsis;
-                .label{
-                    display: inline-block;
-                    color: @font-color2;
-                    font-size: 14px;
-                    width: 60px;
-                    margin-right: 40px;
-                }
-                .level-high, .level-middle, .level-low{
-                    display: inline-block;
-                    text-align: center;
-                    width: 76px;
-                    height: 30px;
-                    border-radius: 3px;
-                    color: #fff;
-                    font-size: 14px;
-                }
-                .level-high{
-                    background: rgb(251, 13, 29);
-                }
-                .level-middle{
-                    background: rgb(249, 98, 29);
-                }
-                .level-low{
-                    background: rgb(252, 185, 42);
-                }
-                .count-text{
-                    font-size: 22px;
-                    color: rgb(34, 145, 226);
-                }
-            }
-            &:hover{
-                box-shadow: 0 2px 16px rgba(0,0,0,0.4);
-                .detail{
-                    opacity: 1;
-                    top: 198px;
-                    z-index: 1;
-                }
-            }
+            
             .detail{
                 .title{
                     margin-bottom: 10px;
@@ -174,7 +216,7 @@ export default {
                 }
                 position: absolute;
                 left: 0;
-                top: 208px;
+                top: 210px;
                 color: #666;
                 background: #fff;
                 box-sizing: border-box;

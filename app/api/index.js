@@ -1,7 +1,8 @@
 
 import axios from 'axios'
+axios.defaults.withCredentials = true
 
-const API_HOST = 'http://192.168.2.207:8000'
+const API_HOST = 'http://192.168.2.206:8000'
 // const API_HOST = ''
 
 
@@ -34,6 +35,25 @@ export function regist({
     }) {
         axios
             .post(_handlePath(REGIST_PATH), params)
+            .then(res => {
+                success && success(res.data)
+            })
+            .catch(e => {
+                fail && fail(e)
+            })
+
+}
+
+//添加用户
+const ADD_USER_PATH = '/add_user'
+
+export function addUser({
+        params={},
+        success,
+        fail
+    }) {
+        axios
+            .post(_handlePath(ADD_USER_PATH), params)
             .then(res => {
                 success && success(res.data)
             })
@@ -134,6 +154,24 @@ export function getTaskPage({
         })
 }
 
+//任务搜索
+const GET_TASK_SEARCH = '/search/task'
+
+export function getTaskSearch({
+    params={},
+    success,
+    fail
+}) {
+    axios
+        .get(_handlePath(GET_TASK_SEARCH, params))
+        .then(res => {
+            success && success(res.data)
+        })
+        .catch(e => {
+            fail && fail(e)
+        })
+}
+
 //漏洞排行
 const GET_VULN_RANK = '/vuln_list/index'
 
@@ -161,6 +199,24 @@ export function getVulnPage({
 }) {
     axios
         .get(_handlePath(GET_VULN_PAGE, params))
+        .then(res => {
+            success && success(res.data)
+        })
+        .catch(e => {
+            fail && fail(e)
+        })
+}
+
+//漏洞搜索
+const GET_VULN_SEARCH = '/search/vuln'
+
+export function getVulnSearch({
+    params={},
+    success,
+    fail
+}) {
+    axios
+        .get(_handlePath(GET_VULN_SEARCH, params))
         .then(res => {
             success && success(res.data)
         })
@@ -223,6 +279,42 @@ export function getPluginPage({
         })
 }
 
+//插件搜索
+const GET_PLUGIN_SEARCH = '/search/script'
+
+export function getPluginSearch({
+    params={},
+    success,
+    fail
+}) {
+    axios
+        .get(_handlePath(GET_PLUGIN_SEARCH, params))
+        .then(res => {
+            success && success(res.data)
+        })
+        .catch(e => {
+            fail && fail(e)
+        })
+}
+
+//插件更新
+const SCRIPT_UPDATE = '/script_update'
+
+export function scriptUpdate({
+    params={},
+    success,
+    fail
+}) {
+    axios
+        .get(_handlePath(SCRIPT_UPDATE))
+        .then(res => {
+            success && success(res.data)
+        })
+        .catch(e => {
+            fail && fail(e)
+        })
+}
+
 //提交扫描任务
 const PUT_TASK = '/add_task'
 
@@ -240,7 +332,6 @@ export function putTask({
             fail && fail(e)
         })
 }
-
 
 
 

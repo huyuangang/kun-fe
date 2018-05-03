@@ -6,7 +6,7 @@
             <div class="task-card" v-for="(l, index) in list" :key="index">
                 <p class="task-name" :title="l.task_name">{{l.task_name}}</p>
                 <p class="task-status"><span class="label">状态</span><span class="status-text" :class="'status-'+l.status">{{getStatus(l.status)}}</span></p>
-                <p class="task-progress"><span class="label">进度</span><span class="progress" :title="l.progress+'%'"><span class="progress-block" :style="getProgressStyle(l.progress)"></span></span></p>
+                <p class="task-progress"><span class="label">进度</span><span class="progress" :title="getProgressNumber(l.progress)"><span class="progress-block" :style="getProgressStyle(l.progress)"></span></span></p>
                 <p class="task-time"><span class="label">创建时间</span>{{l.create_time}}</p>
             </div>
         </div>
@@ -22,14 +22,15 @@
 
 <script>
 import Header from './layout/header.vue'
-import { getTaskPage } from '../api'
+import { getTaskPage, getTaskSearch } from '../api'
 export default {
     data() {
         return {
             list: [],
             page: 1,
             totalPage: 0,
-            goPage: ''
+            goPage: '',
+            keyword: ''
         }
     },
     components: { Header },
@@ -49,10 +50,26 @@ export default {
                 }
             })
         },
+        getTaskSearch(p) {
+            getTaskSearch({
+                params: {
+                    keyword: this.keyword,
+                    p: p || 1
+                },
+                success: data => {
+                    this.page = p;
+                    this.list = data.info;
+                    this.totalPage = data.total_page;
+                },
+                fail: e => {
+                    console.log(e);
+                }
+            })
+        },
         changePage(p) {
             p = parseInt(p, 10);
             if(1 <= p && p <= this.totalPage) {
-                this.getTaskPage(p);
+                this.getTask(p);
             }
         },
         getStatus(s){
@@ -66,14 +83,31 @@ export default {
             return t;
         },
         getProgressStyle(p){
-            let w = parseInt(p) / 100 * 120;
+            let w = parseInt(p) / 100 * 80;
             return {
                 width: w + 'px'
+            }
+        },
+        getProgressNumber(p) {
+            return p.replace('%', '') + '%'
+        },
+        getKeyword() {
+            let search = location.search.match(/q\=(.+)/);
+            if(search){
+                this.keyword = search[search.index]
+            }
+        },
+        getTask(p) {
+            if(this.keyword) {
+                this.getTaskSearch(p);
+            } else {
+                this.getTaskPage(p);
             }
         }
     },
     created() {
-        this.getTaskPage(this.page);
+        this.getKeyword();
+        this.getTask(this.page);
     }
 }
 </script>
@@ -165,9 +199,16 @@ export default {
                 position: relative;
                 display: inline-block;
                 border: 1px solid rgba(0,0,0,0.24);
-                width: 120px;
+                width: 80px;
                 height: 10px;
                 border-radius: 3px;
+                &::after{
+                    position: absolute;
+                    content: attr(title);
+                    left: 85px;
+                    top: 0;
+                    line-height: 1;
+                }
             }
             .progress-block{
                 position: absolute;

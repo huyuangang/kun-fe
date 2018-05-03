@@ -4,11 +4,13 @@
         <Header :active="1"></Header>
         <div class="main clearfix">
             <div class="vuln-card" v-for="(l, index) in list" :key="index">
-                <p class="vuln-name" :title="l.target">{{l.target}}</p>
-                <p class="vuln-target" :title="l.task_name"><span class="label">任务名称</span><span>{{l.task_name}}</span></p>
-                <p class="vuln-script-name"><span class="label">脚本名称</span><span>{{l.script_name}}</span></p>
-                <p class="vuln-script-type"><span class="label">脚本类型</span><span>{{l.script_type}}</span></p>
-                <p class="vuln-tag"><span :class="'level-'+l.level">{{getLevel(l.level)}}危</span><span class="create-time">{{l.time}}</span></p>
+                <div class="card-content">
+                    <p class="vuln-name" :title="l.target">{{l.target}}</p>
+                    <p class="vuln-target" :title="l.task_name"><span class="label">任务名称</span><span>{{l.task_name}}</span></p>
+                    <p class="vuln-script-name"><span class="label">脚本名称</span><span>{{l.script_name}}</span></p>
+                    <p class="vuln-script-type"><span class="label">脚本类型</span><span>{{l.script_type}}</span></p>
+                    <p class="vuln-tag"><span :class="'level-'+l.level">{{getLevel(l.level)}}危</span><span class="create-time">{{l.time}}</span></p>
+                </div>
                 <div class="detail" v-if="l.message">
                     <p class="title">返回信息</p>
                     {{l.message}}
@@ -27,7 +29,7 @@
 
 <script>
 import Header from './layout/header.vue'
-import { getVulnPage } from '../api'
+import { getVulnPage, getVulnSearch } from '../api'
 export default {
     data() {
         return {
@@ -35,7 +37,8 @@ export default {
             page: 1,
             totalPage: 0,
             goPage: '',
-            watchList: []
+            watchList: [],
+            keyword: ''
         }
     },
     components: { Header },
@@ -55,27 +58,58 @@ export default {
                 }
             })
         },
+        getVulnSearch(p) {
+            getVulnSearch({
+                params: {
+                    keyword: this.keyword,
+                    p
+                },
+                success: data => {
+                    this.page = p;
+                    this.list = data.info;
+                    this.totalPage = data.total_page;
+                },
+                fail: e => {
+                    console.log(e);
+                }
+            })
+        },
         changePage(p) {
             p = parseInt(p, 10);
             if(1 <= p && p <= this.totalPage) {
-                this.getVulnPage(p);
+                if(this.keyword) {
+                    this.getVulnSearch(p)
+                } else {
+                    this.getVulnPage(p);
+                }
             }
         },
         getLevel(text){
             let t;
             switch(text) {
                 case 'high': t = '高';break;
-                case 'middle': t = '中';break;
+                case 'medium': t = '中';break;
                 case 'low': t = '低';break;
             }
             return t;
         },
         watch(m) {
             alert(m);
+        },
+        getKeyword() {
+            let search = location.search.match(/q\=(.+)/);
+            if(search){
+                this.keyword = search[search.index]
+            }
         }
     },
     created() {
-        this.getVulnPage(this.page);
+        this.getKeyword();
+        if(this.keyword) {
+            this.getVulnSearch(this.page);
+        } else {
+            this.getVulnPage(this.page);
+        }
     }
 }
 </script>
@@ -86,6 +120,7 @@ export default {
     @font-color2: rgb(130, 130, 130);
     .vuln{
         background: @bg-color;
+        padding-bottom: 70px;
     }
     .main{
         width: 1120px;
@@ -95,16 +130,46 @@ export default {
     }
     .vuln-card{
         position: relative;
-        background: #fff;
         float: left;
         width: 260px;
+        height: 240px;
         margin: 10px;
-        box-shadow: 0 2px 8px rgba(0,0,0,0.24);
-        padding: 16px 16px 0 16px;
-        box-sizing: border-box;
-        border-radius: 3px;
-        cursor: pointer;
-        transition: all .2s ease-in-out;
+        .card-content{
+            position: absolute;
+            left: 0;
+            top: 0;
+            right: 0;
+            bottom: 0;
+            background: #fff;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.24);
+            padding: 16px 16px 0 16px;
+            box-sizing: border-box;
+            border-radius: 3px;
+            cursor: pointer;
+            transition: all .2s ease-in-out;
+            &:hover{
+                box-shadow: 0 2px 16px rgba(0,0,0,0.4);
+                &+.detail{
+                    opacity: 1;
+                    top: 240px;
+                    z-index: 1;
+                }
+            }
+            &>p{
+                margin-bottom: 16px;
+                line-height: 30px;
+                white-space: nowrap;
+                overflow: hidden;
+                text-overflow: ellipsis;
+                .label{
+                    display: inline-block;
+                    color: @font-color2;
+                    font-size: 14px;
+                    width: 60px;
+                    margin-right: 40px;
+                }
+            }
+        }
         .vuln-name{
             color: @font-color1;
             font-size: 22px;
@@ -127,7 +192,7 @@ export default {
                 background: rgb(251, 13, 29);
                 color: #fff;
             }
-            .level-middle{
+            .level-medium{
                 background: rgb(249, 98, 29);
                 color: #fff;
             }
@@ -136,28 +201,7 @@ export default {
                 color: #fff;
             }
         }
-        &>p{
-            margin-bottom: 16px;
-            line-height: 30px;
-            white-space: nowrap;
-            overflow: hidden;
-            text-overflow: ellipsis;
-            .label{
-                display: inline-block;
-                color: @font-color2;
-                font-size: 14px;
-                width: 60px;
-                margin-right: 40px;
-            }
-        }
-        &:hover{
-            box-shadow: 0 2px 16px rgba(0,0,0,0.4);
-            .detail{
-                opacity: 1;
-                top: 241px;
-                z-index: 1;
-            }
-        }
+        
         .detail{
             .title{
                 margin-bottom: 10px;
@@ -165,7 +209,7 @@ export default {
             }
             position: absolute;
             left: 0;
-            top: 251px;
+            top: 250px;
             color: #666;
             background: #fff;
             box-sizing: border-box;
