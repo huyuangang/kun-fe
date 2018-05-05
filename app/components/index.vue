@@ -4,8 +4,9 @@
         <Header :active="0"></Header>
         <div class="main">
             <div class="jumbotron">
-                <h1>在线漏洞扫描平台</h1>
-                <p class="des">这下面加上一部分吹牛B的话，比如什么最专业的、最安全的之类的</p>
+                <h1>漏洞扫描平台</h1>
+                <p class="des">插件数：<span class="script-number">{{scriptNum}}</span>
+                    已发现漏洞数：<span class="vuln-number">{{vulnNum}}</span></p>
                 <div class="new-scan" @click="newScanShow=true">新建扫描</div>
             </div>
             <h2 class="section-title">任务状态</h2>
@@ -27,7 +28,7 @@
                     <p class="task-text">已完成</p>
                 </li>
             </ul>
-            <h2 class="section-title">任务列表<span class="find-more">查看更多</span></h2>
+            <h2 class="section-title">任务列表<a class="find-more" href="/task">查看更多</a></h2>
             <table class="list" cellspacing="0">
                 <thead>
                     <tr>
@@ -36,6 +37,7 @@
                         <th>创建时间</th>
                         <th>状态</th>
                         <th>进度</th>
+                        <th>操作</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -45,6 +47,8 @@
                         <td>{{t.create_time}}</td>
                         <td>{{t.status}}</td>
                         <td>{{t.progress}}%</td>
+                        <td v-if="delStatus.indexOf(t.status) > -1"><span class="task-del-btn" @click="taskStatusHandle(t.task_id, 0)">删除</span></td>
+                        <td v-else><span class="task-stop-btn" @click="taskStatusHandle(t.task_id, 1)">停止</span></td>
                     </tr>
                 </tbody>
             </table>
@@ -71,16 +75,18 @@
             <table class="list" cellspacing="0">
                 <thead>
                     <tr>
-                        <th>脚本ID</th>
+                        <th>漏洞名称</th>
                         <th>脚本名称</th>
+                        <th>漏洞等级</th>
                         <th>脚本作者</th>
                         <th>创建时间</th>
                     </tr>
                 </thead>
                 <tbody>
                     <tr v-for="(s, index) in scriptRank" :key="index">
-                        <td>{{s.id}}</td>
+                        <td>{{s.title}}</td>
                         <td>{{s.name}}</td>
+                        <td>{{getLeveText(s.level)}}</td>
                         <td>{{s.author}}</td>
                         <td>{{s.create_time}}</td>
                     </tr>
@@ -94,7 +100,7 @@
 <script>
 import Header from './layout/header.vue'
 import newScan from './newScan.vue'
-import { getTaskStatus, getTaskList, getVulnRank, getScriptRank } from '../api';
+import { getTaskStatus, getTaskList, getVulnRank, getScriptRank, taskStatusHandle, getScannerData } from '../api';
 export default {
     data() {
         return {
@@ -105,11 +111,25 @@ export default {
             taskList: [],
             vulnRank: [],
             scriptRank: [],
-            newScanShow: false
+            newScanShow: false,
+            delStatus: ['Finish', 'Close', 'Failed'],
+            scriptNum: 0,
+            vulnNum: 0
         }
     },
     components: { Header, newScan },
     methods: {
+        getScannerData() {
+            getScannerData({
+                success: data => {
+                    this.scriptNum = data.script_count;
+                    this.vulnNum = data.vuln_count;
+                },
+                fail: e => {
+                    console.log(e)
+                }
+            })
+        },
         getTaskStatus() {
             let me = this;
             getTaskStatus({
@@ -123,6 +143,15 @@ export default {
                     console.log(e)
                 }
             })
+        },
+        getLeveText(l) {
+            let t;
+            switch(l) {
+                case 'high': t = '高';break;
+                case 'medium': t = '中';break;
+                case 'low': t = '低';break;
+            }
+            return t;
         },
         getTaskList() {
             let me = this;
@@ -156,9 +185,27 @@ export default {
                     console.log(e)
                 }
             })
+        },
+        taskStatusHandle(id, type) {
+            taskStatusHandle({
+                params: {
+                    taskid: id
+                },
+                success: data => {
+                    if(data.success) {
+                        location.reload()
+                    } else {
+                        alert('任务更新失败')
+                    }
+                },
+                fail: e => {
+                    console.log(e);
+                }
+            })
         }
     },
     created() {
+        this.getScannerData();
         this.getTaskStatus();
         this.getTaskList();
         this.getVulnRank();
@@ -189,9 +236,13 @@ export default {
                 color: #333;
             }
             .des{
-                margin-top: 10px;
+                margin-top: 114px;
                 font-size: 16px;
-                color: #333;
+                color: #666;
+                .script-number, .vuln-number{
+                    font-size: 30px;
+                    color: #07aefc;
+                }
             }
             .new-scan{
                 position: absolute;
@@ -217,6 +268,7 @@ export default {
                 float: right;
                 color: #666;
                 cursor: pointer;
+                text-decoration: none;
             }
         }
         .task-wrap{
@@ -267,6 +319,22 @@ export default {
             td{
                 color: #666;
                 border-top: 1px solid #eee;
+            }
+            .task-del-btn, .task-stop-btn{
+                display: block;
+                background: red;
+                color: #fff;
+                line-height: 25px;
+                width: 60px;
+                margin: auto;
+                cursor: pointer;
+                border-radius: 3px;
+                &:hover{
+                    box-shadow: 0 0 4px rgba(0, 0, 0, .6);
+                }
+            }
+            .task-stop-btn{
+                background: #666;
             }
         }
     }

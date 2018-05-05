@@ -3,7 +3,7 @@
     <div class="task">
         <Header :active="2"></Header>
         <div class="main clearfix">
-            <div class="task-card" v-for="(l, index) in list" :key="index" @click="goTaskDetail(l.task_id)">
+            <div class="task-card" v-for="(l, index) in list" :key="index" @click="goTaskDetail(l.status, index)">
                 <p class="task-name" :title="l.task_name">{{l.task_name}}</p>
                 <p class="task-status"><span class="label">状态</span><span class="status-text" :class="'status-'+l.status">{{getStatus(l.status)}}</span></p>
                 <p class="task-progress"><span class="label">进度</span><span class="progress" :title="getProgressNumber(l.progress)"><span class="progress-block" :style="getProgressStyle(l.progress)"></span></span></p>
@@ -79,6 +79,7 @@ export default {
                 case 'Waiting': t = '等待中'; break; 
                 case 'Failed': t = '已失败'; break; 
                 case 'Running': t = '进行中'; break; 
+                case 'Close': t = '已关闭'; break; 
             }
             return t;
         },
@@ -104,10 +105,20 @@ export default {
                 this.getTaskPage(p);
             }
         },
-        goTaskDetail(id) {
-            let a = document.createElement('a')
-            a.href = '/task_detail?taskid='+id;
-            a.click();
+        goTaskDetail(status, index) {
+            if(status === 'Finish') {
+                let a = document.createElement('a')
+                a.href = '/task_detail?taskid='+this.list[index].task_id;
+                a.click();
+            } else if(status === 'Close') {
+                alert('任务已关闭')
+            } else if(status === 'Waiting') {
+                alert('任务尚未开始')
+            } else if(status === 'Running') {
+                alert('任务进行中')
+            } else {
+                alert(this.list[index].warning)
+            }
         }
     },
     created() {
@@ -199,6 +210,9 @@ export default {
             }
             .status-Running{
                 background: @running-color;
+            }
+            .status-Close{
+                background: @font-color1;
             }
             .progress{
                 position: relative;

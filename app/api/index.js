@@ -102,6 +102,25 @@ export function getUserName({
 
 }
 
+//获取平台信息
+const GET_SCANNER_DATA = '/scanner_data'
+
+export function getScannerData({
+        params={},
+        success,
+        fail
+    }) {
+        axios
+            .get(_handlePath(GET_SCANNER_DATA))
+            .then(res => {
+                success && success(res.data)
+            })
+            .catch(e => {
+                fail && fail(e)
+            })
+
+}
+
 //任务状态
 const GET_TASK_STATUS = '/task_count'
 
@@ -183,6 +202,23 @@ export function getTaskDetail({
 }) {
     axios
         .get(API_HOST+GET_TASK_DETAIL+'/'+params.taskid)
+        .then(res => {
+            success && success(res.data)
+        })
+        .catch(e => {
+            fail && fail(e)
+        })
+}
+//删除
+const TASK_HANDLE = '/task_delete'
+
+export function taskStatusHandle({
+    params={},
+    success,
+    fail
+}) {
+    axios
+        .get(API_HOST+TASK_HANDLE+'/'+params.taskid)
         .then(res => {
             success && success(res.data)
         })
@@ -340,10 +376,37 @@ const PUT_TASK = '/add_task'
 export function putTask({
     params={},
     success,
+    fail,
+    type=0
+}) {
+    let config = {}
+    if(type === 1) {
+        config = {
+            headers: {
+                'Content-Type': 'multipart/form-data'
+            }
+        }
+    }
+    axios
+        .post(_handlePath(PUT_TASK), params, config)
+        .then(res => {
+            success && success(res.data)
+        })
+        .catch(e => {
+            fail && fail(e)
+        })
+}
+
+//文件上传测试
+const GET_API_LIST = '/api_list'
+
+export function getApiList({
+    params={},
+    success,
     fail
 }) {
     axios
-        .post(_handlePath(PUT_TASK), params)
+        .get(_handlePath(GET_API_LIST))
         .then(res => {
             success && success(res.data)
         })

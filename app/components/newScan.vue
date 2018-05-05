@@ -11,15 +11,31 @@
                 <div class="form-group">
                     <label for="">目标类型</label>
                     <div class="target-wrap dropdown">
-                        <span class="active-target" @click="dropChange">{{activeTraget}}</span>
+                        <span class="active-target" @click="dropChange(0)">{{activeTarget}}</span>
                         <ul class="dropdown-list" v-show="targetShow">
                             <li class="dropdown-list-item" v-for="(t, index) in targetList" @click="chooseTarget(t)" :key="index">{{t}}</li>
                         </ul>
                     </div>
                 </div>
-                <div class="form-group" v-show="activeTraget==='URL' || activeTraget==='IP段'">
-                    <label for="">请输入{{activeTraget}}</label>
+                <div class="form-group" v-show="activeTarget==='URL' || activeTarget==='IP段'">
+                    <label for="">请输入{{activeTarget}}</label>
                     <input class="url-area" type="text" v-model="url">
+                </div>
+                <div class="form-group" v-show="activeTarget==='文件'">
+                    <input type="file" ref="file" @change="getFile">
+                </div>
+                <div class="form-group" v-show="activeTarget==='API'">
+                    <label for="">API列表</label>
+                    <div class="api-choose">
+                        <p class="api-list-active" @click="dropChange(1)">{{activeApi}}</p>
+                        <ul class="api-list" v-show="apiShow">
+                            <li class="api-list-item" v-for="(a, index) in apiList" @click="chooseApi(a)" :key="index">{{a}}</li>
+                        </ul>
+                    </div>
+                </div>
+                <div class="form-group" v-show="activeTarget==='API'">
+                    <label for="">搜索关键字</label>
+                    <input class="api-area" type="text" v-model="apiKey">
                 </div>
                 <div class="form-group clearfix">
                     <p class="plugin-label" for="">插件选择</p>
@@ -38,19 +54,34 @@
 </template>
 
 <script>
-import { getPluginList, putTask } from '../api'
+import { getPluginList, putTask, getApiList } from '../api'
 export default {
     data() {
         return {
-            targetList: ['URL', 'IP段', '文件', '爬虫', 'API'],
+            targetList: ['URL', 'IP段', 'API', '爬虫', '文件' ],
             pluginList: [],
-            activeTraget: 'URL',
+            activeTarget: 'URL',
             targetShow: false,
+            apiShow: false,
+            activeApi: '',
             taskName: '',
-            url: ''
+            url: '',
+            file: null,
+            apiList: [],
+            apiKey: ''
         }
     },
     methods: {
+        getApiList() {
+            getApiList({
+                success: data => {
+                    this.apiList = data;
+                },
+                fail: e => {
+                    console.log(e);
+                }
+            })
+        },
         getPluginList() {
             let me = this;
             getPluginList({
@@ -62,12 +93,20 @@ export default {
                 }
             })
         },
-        dropChange() {
-            this.targetShow = !this.targetShow;
+        dropChange(t) {
+            if(t === 0) {
+                this.targetShow = !this.targetShow;
+            } else if(t === 1) {
+                this.apiShow = !this.apiShow;
+            }
         },
         chooseTarget(t) {
-            this.activeTraget = t;
+            this.activeTarget = t;
             this.targetShow = false;
+        },
+        chooseApi(a) {
+            this.activeApi = a;
+            this.apiShow = false;
         },
         addPlugin(index) {
             if(this.pluginList[index].active) {
@@ -88,26 +127,51 @@ export default {
             return actives.join(',')
         },
         putTask(){
-            let me = this;
-            let index = this.targetList.indexOf(this.activeTraget);
-            putTask({
-                params: {
+            let index = this.targetList.indexOf(this.activeTarget);
+            let params;
+            let type = 0;
+            if(index === 4) {
+                params = new FormData();
+                params.append('task_type', index);
+                params.append('task_name', this.taskName);
+                params.append('target', this.url);
+                params.append('script', this.getChooseSctipt());
+                params.append('file', this.file);
+                type = 1;
+            } else if(index === 2) {
+                params = {
+                    task_type: index,
+                    task_name: this.taskName,
+                    api_name: this.activeApi,
+                    keyword: this.apiKey,
+                    script: this.getChooseSctipt()
+                }
+            } else {
+                params = {
                     task_type: index,
                     task_name: me.taskName,
-                    target: me.url,
-                    script: me.getChooseSctipt()
+                    target: this.url,
+                    script: this.getChooseSctipt()
+                }
+            } 
+            putTask({
+                params,
+                type,
+                success: data => {
+                    this.$emit('close');
                 },
-                success(data){
-                    me.$emit('close');
-                },
-                fail(e) {
-                    me.$emit('close');
+                fail: e => {
+                    this.$emit('close');
                     console.log(e);
                 }
             })
+        },
+        getFile() {
+            this.file = this.$refs.file.files[0];
         }
     },
     created() {
+        this.getApiList();
         this.getPluginList();
     }
 }
@@ -169,7 +233,7 @@ export default {
                     line-height: 40px;
                 }
             }
-            .task-name-area, .url-area{
+            .task-name-area, .url-area, .api-area {
                 float: right;
                 height: 30px;
                 width: 450px;
@@ -180,7 +244,7 @@ export default {
                 text-indent: 10px;
                 outline: none;
             }
-            .target-wrap{
+            .target-wrap, .api-choose{
                 position: relative;
                 float: right;
                 width: 450px;
@@ -189,7 +253,7 @@ export default {
                 background: #fff;
                 border-radius: 3px;
                 cursor: pointer;
-                .active-target{
+                .active-target, .api-list-active{
                     position: absolute;
                     width: 100%;
                     height: 100%;
@@ -198,15 +262,25 @@ export default {
                     color: #333;
                     box-shadow: 2px 2px 4px 0 #aaa;
                     box-sizing: border-box;
+                    &::after{
+                        position: absolute;
+                        right: 10px;
+                        top: 12px;
+                        content: "";
+                        border: 6px solid #666;
+                        border-bottom: none;
+                        border-left-color: transparent;
+                        border-right-color: transparent;
+                    }
                 }
-                .dropdown-list{
+                .dropdown-list, .api-list{
                     position: absolute;
                     top: 100%;
                     width: 100%;
                     background: #fff;
                     box-shadow: 2px 2px 4px 0 #aaa;
                 }
-                .dropdown-list-item{
+                .dropdown-list-item, .api-list-item{
                     padding-left: 10px;
                     &:hover{
                         background: #eee;
